@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "library(jsonlite)\nlibrary(dplyr)\nlibrary(tidyr)\nlibrary(lubridate)\nlibrary(readr)\n\ninitialjson <- fromJSON(\"http://www.runczech.com/srv/www/api/runner-results/v1/results/?subeventId=11875&page=1&per_page=1\", simplifyDataFrame = T, flatten=T)\nnumpages <- ceiling(initialjson$totalNumberOfRecords / 1000) \n\nbaseurl <- \"http://www.runczech.com/srv/www/api/runner-results/v1/results/?subeventId=11875&per_page=1000&page=\"\n\nif(exists(\"xx\")) rm(xx)\nfor (i in 1:numpages) {\n  maraurl = paste0(baseurl, i)\n  piece <- fromJSON(maraurl , simplifyDataFrame = T, flatten = T)\n  piece <- as.data.frame(piece$data)\n  print(maraurl)\n  print(piece$lastName[1])\n  print(dim(piece))\n  if(!exists(\"xx\")) {\n    print(\"creating xx\")\n    xx <- piece\n  } else {\n    print(\"adding rows\")\n    xx <- bind_rows(xx, piece)\n  }\n  rm(piece)\n}\n\nlibrary(feather)\n\nxx %>% select(-subeventId, id_race = id, rank_race = rank, pace_race = pace,\n              finishTime.seconds_race = finishTime.seconds,\n              finishTime.time_race = finishTime.time,\n              chipTime.time_race = chipTime.time,\n              chipTime.seconds_race = chipTime.seconds) %>% \n  unnest(splitResults) %>%\n  write_feather(\"prgmarathon.feather\") %>% \n  write_csv(\"prgmarathon.csv\")\n",
+    "created" : 1464427838665.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4055911603",
+    "id" : "4ED56CDC",
+    "lastKnownWriteTime" : 1464428443,
+    "last_content_update" : 1464428443431,
+    "path" : "~/github/prgmarathon/download_data.R",
+    "project_path" : "download_data.R",
+    "properties" : {
+        "chunk_rendered_width" : "650",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
