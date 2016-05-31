@@ -6,14 +6,15 @@ library(feather)
 library(ggplot2)
 library(scales)
 library(stringr)
+library(readr)
 
 # aa <- read_feather("prgmarathon.feather")
-aa <- read.csv("prgmarathon.csv")
+pmd <- read_csv("prgmarathon.csv")
 
-grpvars <- names(aa)[c(c(3:9), c(11:20), c(22:28))]
-grpvars <- lapply(grpvars, as.symbol)
+grpvars <- names(pmd)[c(c(3:9), c(11:20), c(22:28))]
+grpvars <- lapply(c(grpvars, "birthYear"), as.symbol)
 
-yy <- aa %>%
+pmds <- pmd %>%
   select(-subeventSplit.finish, -subeventSplit.subeventId, -subeventSplit.id,
          -id, -id_race, -runnerProfileId, -occupationId, -entryState, -eventId) %>% 
   mutate(birthDate = parse_date_time(birthDate, "d.m.Y"),
@@ -22,8 +23,10 @@ yy <- aa %>%
          splitTime = parse_date_time(splitTime, "d.m.Y h:m:s")) %>%
   group_by_(.dots = grpvars) %>% 
   nest()
+
+rm(pmd)
   
-yy %>% 
+pmds %>% 
   unnest() %>% 
   group_by(ageGroup) %>% 
   mutate(agediff = mean(birthYear) - birthYear) %>%
@@ -39,14 +42,16 @@ yy %>%
   facet_wrap( ~ageGroup) +
   theme_bw()
 
-xx %>% 
+pmds %>% 
+  unnest() %>% 
   group_by(occupation, sex, ageGroup) %>%
   arrange(finishTime.seconds) %>% 
   mutate(newrank = min_rank(finishTime.seconds)) %>% 
   filter(firstName=="Petr", lastName == "Bouchal") %>% 
   select(newrank)
 
-yy %>% 
+pmds %>%
+  unnest() %>% 
   group_by(occupation, ageGroup, subeventSplit.title) %>%
   arrange(finishTime.seconds) %>% 
   mutate(newrank = min_rank(finishTime.seconds)) %>% 
