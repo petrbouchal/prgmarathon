@@ -29,10 +29,8 @@ yy %>%
   mutate(agediff = mean(birthYear) - birthYear) %>%
   ungroup() %>% 
   mutate(plotorder = rnorm(n(), 0, 1)) %>% # mix up order so best don't show on
-  arrange(plotorder)                       # top of plot
-
-
-ggplot(yy, aes(subeventSplit.distance, 
+  arrange(plotorder) %>%                   # top of plot
+  ggplot(aes(subeventSplit.distance, 
                subeventSplit.length/splitFinishTime.seconds*3.6, group=runnerId,
                colour=agediff)) +
   geom_line(alpha=.1) +
