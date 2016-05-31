@@ -5,12 +5,18 @@ library(lubridate)
 library(feather)
 library(ggplot2)
 library(scales)
+library(stringr)
 
-aa <- read_feather("prgmarathon.feather")
+# aa <- read_feather("prgmarathon.feather")
+aa <- read.csv("prgmarathon.csv")
 
-yy <- aa %>% 
+grpvars <- names(aa)[c(c(3:9), c(11:20), c(22:28))]
+grpvars <- lapply(grpvars, as.symbol)
+
+yy <- aa %>%
+  select(-subeventSplit.finish, -subeventSplit.subeventId, -subeventSplit.id,
+         -id, -id_race, -runnerProfileId, -occupationId, -entryState, -eventId) %>% 
   mutate(birthDate = parse_date_time(birthDate, "d.m.Y"),
-         birthYear = year(birthDate)) %>% 
          birthYear = year(birthDate),
          startTime = parse_date_time(startTime, "d.m.Y h:m:s"),
          splitTime = parse_date_time(splitTime, "d.m.Y h:m:s")) %>%
