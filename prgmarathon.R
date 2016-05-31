@@ -11,6 +11,14 @@ aa <- read_feather("prgmarathon.feather")
 yy <- aa %>% 
   mutate(birthDate = parse_date_time(birthDate, "d.m.Y"),
          birthYear = year(birthDate)) %>% 
+         birthYear = year(birthDate),
+         startTime = parse_date_time(startTime, "d.m.Y h:m:s"),
+         splitTime = parse_date_time(splitTime, "d.m.Y h:m:s")) %>%
+  group_by_(.dots = grpvars) %>% 
+  nest()
+  
+yy %>% 
+  unnest() %>% 
   group_by(ageGroup) %>% 
   mutate(agediff = mean(birthYear) - birthYear) %>%
   ungroup() %>% 
