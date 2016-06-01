@@ -58,3 +58,13 @@ pmds %>%
   filter(firstName=="Petr", lastName == "Bouchal") %>% 
   select(newrank, rank, pace)
 
+pmds %>%
+  unnest() %>% 
+  group_by(sex) %>%
+  mutate(timedecile = ntile(chipTime.seconds_race, 5)) %>% 
+  group_by(timedecile, subeventSplit.title, sex) %>% 
+  mutate(meanpace = mean(1/pace*60, na.rm=T),
+         grp = paste(timedecile, sex)) %>% 
+  ggplot(aes(subeventSplit.distance, meanpace, group=grp, colour=sex)) + 
+  geom_line() + facet_grid(timedecile ~ .)
+
