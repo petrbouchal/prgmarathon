@@ -7,6 +7,7 @@ library(ggplot2)
 library(scales)
 library(stringr)
 library(readr)
+library(extrafont)
 
 # aa <- read_feather("prgmarathon.feather")
 pmd <- read_csv("prgmarathon.csv")
@@ -66,5 +67,8 @@ pmds %>%
   mutate(meanpace = mean(1/pace*60, na.rm=T),
          grp = paste(timedecile, sex)) %>% 
   ggplot(aes(subeventSplit.distance, meanpace, group=grp, colour=sex)) + 
-  geom_line() + facet_grid(timedecile ~ .)
+  geom_line() + facet_grid(timedecile ~ .) +
+  labs(caption="Data from runczech.cz", title="Pace over splits",
+       subtitle="Prague Marathon May 2016") +
+  theme(text=element_text(family="Newslab"))
 
